@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>      
+<beans xmlns="http://www.springframework.org/schema/beans"      
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"     
+    xmlns:p="http://www.springframework.org/schema/p"    
+    xmlns:aop="http://www.springframework.org/schema/aop"     
+    xmlns:context="http://www.springframework.org/schema/context"    
+    xmlns:jee="http://www.springframework.org/schema/jee"    
+    xmlns:tx="http://www.springframework.org/schema/tx"
+    xmlns:mvc="http://www.springframework.org/schema/mvc"
+    xmlns:util="http://www.springframework.org/schema/util"    
+    xsi:schemaLocation="      
+        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.0.xsd    
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd    
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd    
+        http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee-4.0.xsd    
+        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.0.xsd    
+        http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd
+        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+        
+    <!-- 使用annotation 自动注册bean,并保证@controller的属性被注入 -->
+	<context:component-scan base-package="com.zlstudy.controller">
+		<!-- 导致404错误？？？？ exclude-filter排除过滤，导致controller不能注入
+		<context:exclude-filter type="annotation"
+			expression="org.springframework.stereotype.Controller" /> -->
+		<context:include-filter type="annotation" 
+			expression="org.springframework.stereotype.Controller"/>
+	</context:component-scan>
+	
+	<mvc:annotation-driven/>
+	
+	<bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <property name="prefix" value="/WEB-INF/jsp/"/>
+        <property name="suffix" value=".jsp"/>
+    </bean>
+    
+    <!-- 国际化资源 -->
+    <bean id="messageSource" class="org.springframework.context.support.ReloadableResourceBundleMessageSource"
+    	 p:basenames-ref="basenames" p:defaultEncoding="UTF-8"/>
+    
+    <util:list id="basenames">
+    	<value>classpath:messages</value>
+    </util:list>
+    
+    <!--本地化解析用户用户区域 Locale Resolver -->
+  	<bean id="localeResolver" class="org.springframework.web.servlet.i18n.CookieLocaleResolver" p:defaultLocale="zh_CN" />
+
+	<!-- 拦截器LocaleChangeInterceptor动态改变语言 -->
+	<mvc:interceptors>
+		<bean id="localeChangeInterceptor" class="org.springframework.web.servlet.i18n.LocaleChangeInterceptor" p:paramName="lang"/>
+	</mvc:interceptors>
+</beans>
